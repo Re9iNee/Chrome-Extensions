@@ -1,4 +1,4 @@
-let apiKey = 'YOUR_API_KEY_HERE';
+const apiKey = 'YOUR_API_KEY_HERE';
 console.log(sentences)
 let word = sentences;
 let url = `https://api.wordnik.com/v4/word.json/${word}/relatedWords?useCanonical=true&limitPerRelationshipType=10&api_key=${apiKey}`
