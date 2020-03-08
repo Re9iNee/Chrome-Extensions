@@ -1,0 +1,22 @@
+{
+    "manifest_version": 2,
+    "name": "Re9Dictionary",
+    "version": "0.1",
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+    }],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": "/icons/ct.png",
+        "default_title": "A popup will come here"
+    },
+    "icons":{
+        "128": "/icons/128.png",
+        "48": "/icons/128.png",
+        "16": "/icons/128.png"
+    }
+}
