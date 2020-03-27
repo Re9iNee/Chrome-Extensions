@@ -1,0 +1,22 @@
+{
+    "manifest_version": 2,
+    "name": "ClipBoard Extension",
+    "version": "0.1",
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["contentScript.js"]
+    }],
+    "background": {
+        "scripts": ["taffydb-master/taffy.js", "backgroundScript.js"]
+    },
+    "browser_action": {
+        "default_icon": "clip.png",
+        "default_title": "This Extension is like your clipboard",
+        "default_popup": "popup.html"
+    },
+    "icons": {
+        "128": "clip.png",
+        "48": "clip.png",
+        "16": "clip.png"
+    }
+}
