@@ -1,10 +1,8 @@
-console.log("Content Script")
 window.addEventListener("copy", e => {
-    console.log(window.getSelection().toString());
     const text = window.getSelection().toString()
     if (text.trim()) {
         chrome.runtime.sendMessage({
-            content: text
+            content: text.trim()
         }, response => {
             console.log(response.farewell);
         });

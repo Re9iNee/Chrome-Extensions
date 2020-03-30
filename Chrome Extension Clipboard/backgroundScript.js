@@ -36,10 +36,6 @@ function setup() {
 
 
 
-
-
-
-
 /* Insert */
 // db.insert({
 //     text: "Was Everything",
@@ -57,8 +53,13 @@ function thrust(database, items) {
 //     text: "Thumb"
 // }).count());
 
+//it'd be better if query and count were two seprated functions
 function inquiry(database, query) {
-    return database(query).count()
+    return database(query)
+}
+
+function count(datas) {
+    return datas.count()
 }
 
 
@@ -80,7 +81,7 @@ function reform(database, index, item) {
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("request", request)
+    // console.log("request", request)
     dbManager(request.content)
     sendResponse({
         farewell: "Got your message Thank U"
@@ -89,9 +90,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 function dbManager(data) {
-    if (inquiry(db, {
+    if (count(inquiry(db, {
             text: data
-        })) {
+        }))) {
         reform(db, {
             text: data
         }, {
@@ -101,7 +102,8 @@ function dbManager(data) {
         thrust(db, {
             text: data,
             timestamp: Date.now(),
-            isDeleted: false
+            isDeleted: false,
+            isFavourite: false
         })
     }
 }
@@ -119,13 +121,29 @@ function load(dbName) {
 }
 
 
+function readlocal(id) {
+    return localStorage.getItem(id)
+}
+
+function writelocal(id, string) {
+    return localStorage.setItem(id, string)
+}
+
+
 /* Extension Events */
-// chrome.runtime.onStartup.addListener(() => {
-//     //when chrome opens
-// })
-// chrome.runtime.onInstalled.addListener(() => {
-//     //when reload extension
-// })
+chrome.runtime.onStartup.addListener(() => {
+    //when chrome opens
+    console.log("We Are all set")
+    writelocal("load as", "timestamp")
+    writelocal("ascending", true)
+})
+chrome.runtime.onInstalled.addListener(() => {
+    //when reload extension
+    console.log("We Are all set")
+    writelocal("load as", "timestamp")
+    writelocal("ascending", true)
+
+})
 // chrome.runtime.onSuspend.addListener(() => {
 //     localStorage.setItem("3", "suspend")
 // })
@@ -135,3 +153,6 @@ function load(dbName) {
 // chrome.runtime.onRestartRequired.addListener(() => {
 //     localStorage.setItem("5", "restartRequired")
 // });
+
+//if we didnt have pop up this would run
+// chrome.browserAction.onClicked.addListener(function(tab) { alert('icon clicked')});
