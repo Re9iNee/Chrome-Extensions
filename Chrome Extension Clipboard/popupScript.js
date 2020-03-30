@@ -11,35 +11,68 @@ function write(text) {
 
 const tr = document.querySelector("tr");
 
-document.querySelectorAll('tr').forEach((elt, index) => {
-    if (index !== 0) {
-        elt.addEventListener("click", event => {
-            const text = elt.firstElementChild.textContent;
-            copy(text)
-        })
-    }
-})
-
 async function copy(text) {
     await navigator.clipboard.writeText(text);
     /* Alert the copied text */
-    alert("Copied the text: " + text);
+    // alert("Copied the text: " + text);
 }
 
-
+function deleteRow(event) {
+    event.stopPropagation()
+    dbCopy({
+        text: this.name
+    }).update({
+        isDeleted: true
+    })
+    backgPage.save(dbCopy)
+    reload();
+}
 
 /* add to library */
-add2Library("ClipBoard Bluh Bluh", "1 Minute Ago")
-
-function add2Library(text, time) {
+// add2Library("ClipBoard Bluh Bluh", "1 Minute Ago")
+function add2Library(text, time, id = "") {
     document.querySelector("table").appendChild(elt("tr", {
-        onclick: clicked
-    }, elt("td", null, text), elt("td", null, time)))
+        onclick: clicked,
+        id: id
+    }, elt("td", null, text), elt("td", null, time), elt("td", null, elt("input", {
+        name: text,
+        onclick: deleteRow,
+        type: "checkbox"
+    })), elt("td", null, elt("input", {
+        type: "checkbox",
+        name: text,
+        onclick: favouriteToggle,
+        checked: id === "favourites"
+    }))))
+}
+
+function favouriteToggle(event) {
+    event.stopPropagation()
+    dbCopy({
+        text: this.name
+    }).update({
+        isFavourite: this.checked
+    })
+    if (this.checked) {
+        changeBackground(this.parentElement.parentElement, false, "#fcc603")
+    } else {
+        changeBackground(this.parentElement.parentElement, false, "")
+        reload()
+    }
+    backgPage.save(dbCopy)
 }
 
 function clicked(event) {
     const text = this.firstElementChild.textContent
+    changeBackground(this, true, "#3bd80d")
     copy(text)
+}
+
+function changeBackground(element, reset, to = "green") {
+    element.style.transition = "all 0.5s"
+    element.style.transitionTimingFunction = "cubic-bezier(0.75, 0.01, 0.12, 1.19)"
+    element.style.backgroundColor = to
+    if (reset) setTimeout(() => element.style.backgroundColor = "", 1000)
 }
 
 function elt(type, props, ...children) {
@@ -53,7 +86,6 @@ function elt(type, props, ...children) {
 }
 
 function sort(database, by) {
-    // console.log(db().order("timestamp").first().text);
     return database().order(by)
 }
 
@@ -68,12 +100,52 @@ function concurrent(timestamp) {
     return (seconds >= 59) ? (minutes >= 59) ? (hours >= 23) ? `${(days).toFixed()} Days Ago` : `${(hours).toFixed()} Hours ago` : `${minutes.toFixed()} Minutes ago` : `A few Seconds Ago`
 }
 
-function tables(as = "timestamp") {
-    sort(dbCopy, as).get().forEach(data => {
-        const text = data.text
-        const time = data.timestamp
-        add2Library(String(text), String(concurrent(time)))
-    })
+function tables(as, ascending) {
+    if (ascending === "true") {
+        sort(dbCopy, as).get().reverse().forEach(data => {
+            const text = data.text
+            const time = data.timestamp
+            const isfavourite = data.isFavourite
+            if (!data.isDeleted) {
+                add2Library(String(text), String(concurrent(time)), (isfavourite) ? "favourites" : "")
+            }
+        })
+    } else {
+        sort(dbCopy, as).get().forEach(data => {
+            const text = data.text
+            const time = data.timestamp
+            const isfavourite = data.isFavourite
+            if (!data.isDeleted) {
+                add2Library(String(text), String(concurrent(time)), (isfavourite) ? "favourites" : "")
+            }
+        })
+    }
 }
 
-tables("timestamp");
+function reload() {
+    window.location.href = "popup.html";
+}
+
+
+const readlocal = backgPage.readlocal;
+const writelocal = backgPage.writelocal;
+tables(readlocal("load as"), readlocal("ascending"))
+/* text and time sort by EVENTS */
+document.getElementById("text").addEventListener("click", e => {
+    if (readlocal("ascending") === "true") {
+        writelocal("ascending", false)
+    } else {
+        writelocal("ascending", true)
+    }
+    writelocal("load as", "text")
+    reload();
+})
+document.getElementById("time").addEventListener("click", e => {
+    if (readlocal("ascending") === "true") {
+        writelocal("ascending", false)
+    } else {
+        writelocal("ascending", true)
+    }
+    writelocal("load as", "timestamp")
+    reload()
+})

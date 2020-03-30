@@ -2,10 +2,11 @@
 
 <head>
     <style>
-        body{
+        body {
             width: 800px;
             height: 700px;
         }
+
         table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
@@ -22,27 +23,21 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
+
+        #favourites {
+            background-color: #fcc603;
+        }
     </style>
 </head>
-<h1>Hello PopUp</h1>
 
 <body>
     <table>
         <tr>
-            <th>Text</th>
-            <th>Time</th>
+            <th id="text">Text</th>
+            <th id="time">Time</th>
+            <th>delete</th>
+            <th>favorite</th>
         </tr>
-        <tr>
-            <td>Lorem Ipsum</td>
-            <td>7Minutes Ago</td>
-        </tr>
-        <tr>
-            <td>Ping Pong</td>
-            <td>6Minutes Ago</td>
-        </tr>
-        <tr>
-            <td>This is test<td>
-            <td>A few Seconds Ago</td>
     </table>
 
 </body>
